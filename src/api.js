@@ -22,8 +22,8 @@ class MessageGenerator {
   }
 
   /**
-     * priority from 1 to 3, 1 = error, 2 = warning, 3 = info
-     * */
+   * priority from 1 to 3, 1 = error, 2 = warning, 3 = info
+   * */
   generate() {
     if (this.stopGeneration) {
       return

@@ -1,64 +1,63 @@
-import React, { Component } from 'react'
-import Button from '@material-ui/core/Button'
-import Api from '../api'
+import React, { useEffect, useCallback } from 'react';
+import {useSelector, useDispatch} from 'react-redux'
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
+import SubList from './sub-list';
+import Api from '../api';
+import {
+  addMessage,
+  deleteAllMessages,
+  toggleIsGeneratingMessages
+} from '../redux/actions';
 
-class MessageList extends Component {
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      messages: [],
+// Init Api, pass faux messageCallback to Api, breaking without it.
+const api = new Api({messageCallback: () => {}})
+
+const MessageList = () => {
+  const dispatch = useDispatch()
+  const dispatchToggleGenerator = () => dispatch(toggleIsGeneratingMessages())
+  const dispatchDeleteMessages = () => dispatch(deleteAllMessages())
+  const isGeneratingMessages = useSelector(state => state.isGeneratingMessages)
+
+  api.messageCallback = (message) => dispatch(addMessage(message));
+
+  const toggleMessageGeneration = () => {
+    dispatchToggleGenerator()
+    isGeneratingMessages
+      ? api.stop()
+      : api.start()
+  }
+
+  useEffect(() => {
+    api.start();
+
+    return () => {
+      api.stop();
     }
-  }
+  }, []);
 
-  api = new Api({
-    messageCallback: (message) => {
-      this.messageCallback(message)
-    },
-  })
-
-  componentDidMount() {
-    this.api.start()
-  }
-
-  messageCallback(message) {
-    const { messages } = this.state
-    this.setState({
-      messages: [
-        ...messages.slice(),
-        message,
-      ],
-    }, () => {
-      // Included to support initial direction. Please remove upon completion
-      console.log(messages)
-    })
-  }
-
-  renderButton() {
-    const isApiStarted = this.api.isStarted()
-    return (
+  return (
+    <Container maxWidth='sm'>
       <Button
         variant="contained"
-        onClick={() => {
-          if (isApiStarted) {
-            this.api.stop()
-          } else {
-            this.api.start()
-          }
-          this.forceUpdate()
-        }}
+        onClick={toggleMessageGeneration}
       >
-        {isApiStarted ? 'Stop Messages' : 'Start Messages'}
+        {isGeneratingMessages ? 'Stop Messages' : 'Start Messages'}
       </Button>
-    )
-  }
-
-  render() {
-    return (
-      <div>
-        {this.renderButton()}
-      </div>
-    )
-  }
-}
+      <Button
+        variant="contained"
+        onClick={() => dispatchDeleteMessages()}
+      >
+        Clear
+      </Button>
+      <Grid container>
+        <SubList type='error' />
+        <SubList type='warning' />
+        <SubList type='info' />
+      </Grid>
+    </Container>
+  );
+};
 
 export default MessageList
