@@ -1,9 +1,11 @@
-import React, { useEffect, useCallback } from 'react';
-import {useSelector, useDispatch} from 'react-redux'
+import React, { useEffect } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import SubList from './sub-list';
+import ErrorSnackbar from './error-snackbar';
 import Api from '../api';
 import {
   addMessage,
@@ -13,6 +15,14 @@ import {
 
 // Init Api, pass faux messageCallback to Api, breaking without it.
 const api = new Api({messageCallback: () => {}})
+
+const StyledContainer = styled(Container)`
+  font-family: Montserrat;
+`;
+
+const TopMarginContainer = styled.div`
+  margin-top: 5vh;
+`;
 
 const MessageList = () => {
   const dispatch = useDispatch()
@@ -38,25 +48,28 @@ const MessageList = () => {
   }, []);
 
   return (
-    <Container maxWidth='sm'>
-      <Button
-        variant="contained"
-        onClick={toggleMessageGeneration}
-      >
-        {isGeneratingMessages ? 'Stop Messages' : 'Start Messages'}
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => dispatchDeleteMessages()}
-      >
-        Clear
-      </Button>
-      <Grid container>
-        <SubList type='error' />
-        <SubList type='warning' />
-        <SubList type='info' />
-      </Grid>
-    </Container>
+    <StyledContainer>
+      <ErrorSnackbar />
+      <TopMarginContainer>
+        <Button
+          variant="contained"
+          onClick={toggleMessageGeneration}
+        >
+          {isGeneratingMessages ? 'Stop Messages' : 'Start Messages'}
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => dispatchDeleteMessages()}
+        >
+          Clear
+        </Button>
+        <Grid container>
+          <SubList type='error' />
+          <SubList type='warning' />
+          <SubList type='info' />
+        </Grid>
+      </TopMarginContainer>
+    </StyledContainer>
   );
 };
 

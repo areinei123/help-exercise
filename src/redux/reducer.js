@@ -20,13 +20,13 @@ export const reducer = (state, action) => {
       const whereToPutMessage = `${message.priorityLevel}Messages`
       return {
         ...state,
-        [whereToPutMessage]: [...state[whereToPutMessage], message]
+        [whereToPutMessage]: [message, ...state[whereToPutMessage]]
       }
     case DELETE_MESSAGE_FROM_LIST:
       const {priorityLevel, value} = action
       return {
         ...state,
-        [`${priorityLevel}Messages`]: [`${priorityLevel}Messages`].filter(
+        [`${priorityLevel}Messages`]: state[`${priorityLevel}Messages`].filter(
           messageObj => messageObj.message !== value
         )
       }

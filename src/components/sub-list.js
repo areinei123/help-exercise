@@ -29,7 +29,7 @@ const SubList = ({type}) => {
 
   return (
     <Grid item xs={4}>
-      <h3>{lodash.capitalize(type)} Messages</h3>
+      <h3>{lodash.capitalize(type)} ({messageList.length} Messages)</h3>
       <List>
         {messageList.map(msg =>
           <StyledCard type={msg.priorityLevel} key={`${type}-${msg.message}`}>
